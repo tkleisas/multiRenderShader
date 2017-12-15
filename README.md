@@ -6,3 +6,4 @@ When the program starts, it autozooms slowly. You can adjust the zoom factor in 
 CA1D, LIFE and MANDEL by pressing the keys '1', '2' and '3'.
 You can see an example of this program in this youtube video:
 [ΝΟΗΣΗ](https://www.youtube.com/watch?v=hUomiyRfpKk)
+The video was post processed in Sony Movie Studio Platinum 13
