@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision mediump float;
+precision mediump int;
+#endif
 uniform float x0;
 uniform float x1;
 uniform float y0;

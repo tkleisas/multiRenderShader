@@ -17,6 +17,18 @@ class CA1D
   int rule=110;
   int currline=0;
   boolean wraparound = true;
+  String [] labels = 
+{
+  "Βλέπετε ένα μονοδιάστατο κυψελιδωτό αυτόματο",
+  "που είναι μια σειρά από κελιά που μπορούν να",
+  "πάρουν τις τιμές 0 ή 1. Η επόμενη κατάσταση ",
+  "ενός κελιού εξαρτάται από την προηγούμενή   ",
+  "και από την κατάσταση των δύο γειτόνων του, ",
+  "του αριστερού και του δεξιού γείτονα.       ",
+  "Το σύνολο των δυνατών κανόνων είναι 256,    ",
+  "και έχουν μελετηθεί εκτενώς.                "
+};
+  
   CA1D()
   {
     grid = new int[width][height];
@@ -31,9 +43,25 @@ class CA1D
       grid[x][currline]=(int)Math.round(Math.random());
     }
   }
-  void setRule(int newrule)
+  int getLabelCount()
+  {
+    return this.labels.length;
+  }
+  void setRule(int newrule, boolean initRandom)
   {
     rule = newrule;
+    if(initRandom)
+    {
+      randomizeLine();
+    }
+    else
+    {
+      for(int x=0;x<width;x++)
+      {
+        grid[x][currline]=0;
+      }
+      grid[columns/2][currline]= 1;
+    }
   }
   int getRule()
   {
@@ -65,6 +93,16 @@ class CA1D
       return false;
     }
     return true;
+  }
+  boolean isWhite()
+  {
+    for(int x=0;x<columns;x++)
+    {
+      if(grid[x][currline]==0)
+      return false;
+    }
+    return true;
+    
   }
   void calcCALine()
   {
@@ -129,8 +167,9 @@ class CA1D
           else
           {
             fill(colors[y%height]);
+            rect(x*zoom, py*zoom, zoom, zoom);
           }
-          rect(x*zoom, py*zoom, zoom, zoom);
+          
         }
         py--;
       }
@@ -145,11 +184,16 @@ class CA1D
         else {
           fill(colors[y % height]);
           stroke(0,0,0,255);
+          rect(x*zoom, py*zoom, zoom, zoom);
         }
-        rect(x*zoom, py*zoom, zoom, zoom);
+        
       }
       py--;
     }
-  }   
+  }
+  String getLabel(int label)
+  {
+    return labels[label%labels.length];
+  }
 
 }
