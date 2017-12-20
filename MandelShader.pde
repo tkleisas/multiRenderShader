@@ -84,6 +84,10 @@ String[] labels=
   {
     return labels[label%labels.length];
   }
+   String[] getLabels()
+  {
+    return labels;
+  }
   void zoom()
   {
     long dt = getTimeDelta();

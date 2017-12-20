@@ -195,5 +195,8 @@ class CA1D
   {
     return labels[label%labels.length];
   }
-
+  String[] getLabels()
+  {
+    return labels;
+  }
 }

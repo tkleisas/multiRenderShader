@@ -7,6 +7,7 @@ int gen =0;
 GOL gol;
 Mandel mandel;
 MandelShader mandelShader;
+SlideShow slideShow;
 long prevTime = 0;
 long currTime = 0;
 boolean recording = false;
@@ -14,29 +15,33 @@ XML xml;
 int DISPLAY_MANDEL =0;
 int DISPLAY_CA1D = 1;
 int DISPLAY_GOL = 2;
+int DISPLAY_SLIDESHOW = 3;
 int displayMode = DISPLAY_MANDEL;
 long timeAcc = 0;
+int textsize = 18;
+int textspeed = 2000;
 void setup()
 {
-  
+  //size(640,350,P3D);
   size(1280,720,P3D); //<>//
   //fullScreen(P3D);
   videoExport = new VideoExport(this,"recording.mp4");
   videoExport.startMovie();
+  slideShow = new SlideShow();
   gol = new GOL();
-  
+  textsize = (int)((18.0/640.0)*width);
   //mandel = new Mandel();
   //mandel.animatePalette();
   mandelShader = new MandelShader((float)width,(float)height);
   f = loadFont("Arial-Black-30.vlw");
   textFont(f);
   ca1d = new CA1D();
-  ca1d.setZoom(5);
+  ca1d.setZoom(2);
   ca1d.setRule(110,false);
   
   ca1d.animatePalette();
   //ca1d.randomizeLine();
-  textSize(24);
+  textSize(24/2);
   currTime = millis();
 }
 void drawOther()
@@ -70,68 +75,19 @@ void draw()
     if(frame%150==0 || ca1d.isBlack() || ca1d.isWhite())
     {
       ca1d.setRule((int)(Math.random()*255),false);
-      //ca1d.randomizeLine();
-      
     }
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),"CA1D",10,40);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),"R:"+ca1d.getRule(),400,40);
-     fill(color(0,0,0,255));
-     stroke(color(0,0,0,255));
-     rect (0,height-4*50,width,height);    
-     long timeToDisplay = ca1d.getLabelCount()*10000;
-     long slideshowTime = timeAcc % timeToDisplay;
-     int labelidx = ((int)slideshowTime/10000);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),ca1d.getLabel(labelidx),0,height-40);
-     if((labelidx-1) >=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),ca1d.getLabel(labelidx-1),0,height-40*2);
-     }
-     if((labelidx-2)>=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),ca1d.getLabel(labelidx-2),0,height-40*3);
-     }
-     if((labelidx-3)>=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),ca1d.getLabel(labelidx-3),0,height-40*4);
-     }
+     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"CA1D",textsize,textsize);
+     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"R:"+ca1d.getRule(),width-10*textsize,textsize);
+     scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,ca1d.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
   }
   
   if(displayMode==DISPLAY_MANDEL) 
   {
-
-    //mandel.display();
     mandelShader.draw();
     mandelShader.zoom();
-    //fill(color(255,0,0));
-    //text("MNDL:"+frame,10,40);
-    //text("z->"+mandel.getPos(),10,300);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),"MNDL:"+frame,10,40);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),"z->"+mandelShader.getPos(),10,300);
-     fill(color(0,0,0,64));
-     stroke(color(0,0,0,64));
-     rect (0,height-4*50,width,height);    
-     long timeToDisplay = mandelShader.getLabelCount()*5000;
-     long slideshowTime = timeAcc % timeToDisplay;
-     int a = (int)(((((float)slideshowTime)/5000.0)*40)%40);
-     int labelidx = ((int)slideshowTime/5000);
-     outlineText (40,color(255,255,255),color(255,255,255,255),""+a,0, 60);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),mandelShader.getLabel(labelidx),0,height+40-a);
-     if((labelidx-1) >=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),mandelShader.getLabel(labelidx-1),0,height-a);
-     }
-     if((labelidx-2)>=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),mandelShader.getLabel(labelidx-2),0,height-40-a);
-     }
-     if((labelidx-3)>=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),mandelShader.getLabel(labelidx-3),0,height-80-a);
-     }
-     if((labelidx-4)>=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),mandelShader.getLabel(labelidx-4),0,height-120-a);
-     }
+     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"MNDL:"+frame,textsize,textsize);
+     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"z->"+mandelShader.getPos(),textsize,textsize*3);
+     scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,mandelShader.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
      
   }
   if(displayMode==DISPLAY_GOL)
@@ -139,43 +95,26 @@ void draw()
 
      gol.generate();
      gol.display();
-     //fill(color(255,0,0));
-     //text("LIFE",10,40);
-     //text("G:"+gen++,400,40);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),"LIFE",10,40);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),"G:"+gen++,400,40);
-     fill(color(0,0,0,128));
-     stroke(color(0,0,0,128));
-     rect (0,height-4*30,width,height);
-     fill(color(0,0,0,255));
-     stroke(color(0,0,0,255));
-     rect (0,height-4*50,width,height);    
-     long timeToDisplay = gol.getLabelCount()*10000;
-     long slideshowTime = timeAcc % timeToDisplay;
-     int labelidx = ((int)slideshowTime/10000);
-     outlineText(40,color(0,0,0,255),color(255,0,0,255),gol.getLabel(labelidx),0,height-40);
-     if((labelidx-1) >=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),gol.getLabel(labelidx-1),0,height-40*2);
-     }
-     if((labelidx-2)>=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),gol.getLabel(labelidx-2),0,height-40*3);
-     }
-     if((labelidx-3)>=0)
-     {
-       outlineText(40,color(0,0,0,255),color(255,0,0,255),gol.getLabel(labelidx-3),0,height-40*4);
-     }
-
+     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"LIFE",textsize,textsize);
+     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"G:"+gen++,width-textsize*12,textsize);
+     scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,gol.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
+  }
+  if(displayMode==DISPLAY_SLIDESHOW)
+  {
+    slideShow.display(timeAcc);
+    scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,slideShow.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
   }
   if(recording)
   {
     //saveFrame("output/mf######.png"); //<>//
     videoExport.saveFrame();
-    outlineText(40,color(0,0,0,255),color(255,0,0,255),"REC",10,height-50);
+    outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"REC",10,height-50);
   }
-
 }
+
+
+
+
 void outlineText(float textSize,color outerColor,color innerColor,String text, int x, int y)
 {
   float w = textWidth(text);
@@ -197,6 +136,41 @@ void outlineText(float textSize,color outerColor,color innerColor,String text, i
   stroke(innerColor);
   text(text, x, y);
 }
+
+void scrollingText(int x, int y,  int boxwidth, int boxheight, int lineheight, int linecount, String[] text, long lineDisplayTime, long timevalue, color textcolor, color textoutlinecolor, color backgroundColor)
+{
+     fill(backgroundColor);
+     stroke(backgroundColor);
+     rect (x,y,boxwidth,boxheight);
+         
+     long timeToDisplay = text.length*lineDisplayTime;
+     long slideshowTime = timevalue % timeToDisplay;
+     long lineTime = slideshowTime % lineDisplayTime;
+     int labelidx = (int)(slideshowTime/lineDisplayTime);
+     int a = (int)(((float)lineTime*(float)lineheight)/(float)lineDisplayTime);
+     //int a = (int)(((int)(((float)slideshowTime)/(float)timeToDisplay)*(float)lineheight)%lineheight);
+     //outlineText (lineheight,color(0,0,0,255),color(255,255,255,255),"a:"+a+" ttd:"+timeToDisplay+" slideshowTime:"+slideshowTime+" lidx:"+labelidx+"lt:"+lineTime,0, 60);
+     int alphaval1 = (int) (((float)a/(float)lineheight)*255.0);
+     color textcolor1 = color (red(textcolor),green(textcolor),blue(textcolor),alphaval1);
+     color textoutlinecolor1 = color(red(textoutlinecolor),green(textoutlinecolor),blue(textoutlinecolor),alphaval1);
+     outlineText(lineheight,textoutlinecolor1,textcolor1,text[labelidx],x,y+boxheight+lineheight-a);
+     for(int i=1;i<linecount-2;i++)
+     {
+       if (labelidx-i>=0)
+       {
+         outlineText(lineheight,textoutlinecolor,textcolor,text[labelidx-i],x,y+boxheight-lineheight*(i-1)-a);
+       }
+     }
+     if (labelidx - (linecount-2)>=0)
+     {
+       int alphaval2 = (int)(((float)(lineheight - (float)a)/lineheight)*255.0);
+       color textcolor2 = color (red(textcolor),green(textcolor),blue(textcolor),alphaval2);
+       color textoutlinecolor2 = color(red(textoutlinecolor),green(textoutlinecolor),blue(textoutlinecolor),alphaval2);
+       outlineText(lineheight,textoutlinecolor2,textcolor2,text[labelidx-(linecount-2)],x,y+boxheight-lineheight*(linecount-3)-a);
+     }
+}
+
+
 void keyPressed()
 {
   if(key=='1')
@@ -212,6 +186,11 @@ void keyPressed()
   if(key=='3')
   {
     displayMode = DISPLAY_GOL;
+    timeAcc = 0;
+  }
+  if(key=='4')
+  {
+    displayMode = DISPLAY_SLIDESHOW;
     timeAcc = 0;
   }
   if(key=='g' || key=='G')
