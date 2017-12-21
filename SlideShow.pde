@@ -48,7 +48,7 @@ class SlideShow
     }
 
     currentSlide = 0;
-    createScrollText(width/textsize -10);
+    createScrollText((3*width/7*textsize));
   }
 
   void createScrollText(int maxwidth)
@@ -60,7 +60,7 @@ class SlideShow
     Slide slide = (Slide)(slides.get(currentSlide));
     String t =slide.text;
     t = t.replaceAll("\r","");
-    t = t.replaceAll("\n","");
+    //t = t.replaceAll("\n","");
     ArrayList a = new ArrayList<String>();
     int linestart = 0;
     int i1=0;
@@ -71,7 +71,13 @@ class SlideShow
         if(i1<i && i1-linestart<maxwidth) {
           i1 = i;
         }
-      } 
+      }
+      if(t.charAt(i)=='\n')
+      {
+        a.add(t.substring(linestart,i));
+        linestart = i+1;
+        i1 = linestart;
+      }
       if(i-linestart>maxwidth){
         
         a.add(t.substring(linestart,i1));
@@ -153,6 +159,7 @@ class SlideShow
         iwidth = (int)((float)iheight*factor);
       }
       image(image, width/3, 0, iwidth, iheight);
+      outlineText(textsize,color(0,0,0,255),color(255,255,255,255),slide.labels.get(slide.currentImage), width/3,iheight+20);
   }
   
 

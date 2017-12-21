@@ -31,7 +31,7 @@ void setup()
     videoExport = new VideoExport(this,"recording.mp4");
     videoExport.startMovie();
   }
-  slideShow = new SlideShow(textsize);
+  
   gol = new GOL();
   textsize = (int)((18.0/640.0)*width);
   //mandel = new Mandel();
@@ -46,6 +46,7 @@ void setup()
   ca1d.animatePalette();
   //ca1d.randomizeLine();
   textSize(24/2);
+  slideShow = new SlideShow(textsize);
   currTime = millis();
 }
 void drawOther()
