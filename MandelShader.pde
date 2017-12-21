@@ -4,18 +4,143 @@ class Trajectory
   {
     waypoints = new ArrayList<Waypoint>();
   }
+  void addWaypoint(Waypoint waypoint)
+  {
+    waypoints.add(waypoint);
+  }
+  int getWaypointCount()
+  {
+    return waypoints.size();
+  }
+  Waypoint getWaypoint(int i)
+  {
+    return (Waypoint)waypoints.get(i);
+  }
+  Waypoint first()
+  {
+    if(waypoints.size()>0)
+    {
+      Waypoint w = waypoints.get(0);
+      currWaypoint = 1;
+      return w;
+    }
+    return null;
+  }
+  Waypoint next()
+  {
+    if(currWaypoint<waypoints.size())
+    {
+      return waypoints.get(currWaypoint++);
+    }
+    return null;
+  }
+  boolean hasNext()
+  {
+    if(currWaypoint<waypoints.size())
+    {
+      return true;
+    }
+    return false;
+  }
   ArrayList<Waypoint> waypoints;
+  int currWaypoint = -1;
 }
 class Waypoint
 {
+  Waypoint(float x0, float y0, float x1, float y1, int frame, float zoomf)
+  {
+    this.x0 = x0;
+    this.y0 = y0;
+    this.x1 = x1;
+    this.y1 = y1;
+    this.frame = frame;
+    this.zoomf = zoomf;
+  }
   float x0;
   float y0;
   float x1;
   float y1;
   int frame;
-  float zoom;
+  float zoomf;
 }
-
+class TrajectoryManager
+{
+  TrajectoryManager()
+  {
+    trajectories = new ArrayList<Trajectory>();
+  }
+  
+  ArrayList <Trajectory> trajectories;
+  Trajectory createTrajectory()
+  {
+    Trajectory trajectory = new Trajectory();
+    trajectories.add(trajectory);
+    return trajectory;
+  }
+  int getTrajectoryCount()
+  {
+    return trajectories.size();
+  }
+  Trajectory getTrajectory(int i)
+  {
+    return (Trajectory)trajectories.get(i);
+  }
+  void deleteTrajectory(int i)
+  {
+    if (i>=0 && i<trajectories.size())
+    {
+      trajectories.remove(i);
+    }
+  }
+  void loadFromXML(String xmlFilename)
+  {
+    trajectories.clear();
+    XML xml;
+    xml = loadXML(xmlFilename);
+    XML[] xmlTrajectories = xml.getChildren();
+    for(int i=0;i<xmlTrajectories.length;i++)
+    {
+      Trajectory trajectory = new Trajectory();
+      XML[] xmlWaypoints = xmlTrajectories[i].getChildren("Trajectory");
+      for(int j=0;j<xmlWaypoints.length;j++)
+      {
+        Waypoint waypoint = new Waypoint(
+                                          xmlWaypoints[j].getFloat("x0"),
+                                          xmlWaypoints[j].getFloat("y0"),
+                                          xmlWaypoints[j].getFloat("x1"),
+                                          xmlWaypoints[j].getFloat("y1"),
+                                          xmlWaypoints[j].getInt("frame"),
+                                          xmlWaypoints[j].getFloat("zoomf")
+                                          );
+        trajectory.addWaypoint(waypoint);
+      }
+    }
+  }
+  void saveToXML(String xmlFilename)
+  {
+    XML xml = new XML("Trajectories");
+    for(int i = 0;i<trajectories.size();i++)
+    {
+      XML xmlTrajectory = xml.addChild("Trajectory");
+      xmlTrajectory.setInt("id",i);
+      Trajectory trajectory = trajectories.get(i);
+      for(int j=0;j<trajectory.waypoints.size();j++)
+      {
+        Waypoint waypoint = trajectory.waypoints.get(j);
+        XML xmlWaypoint = xmlTrajectory.addChild("Waypoint");
+        xmlWaypoint.setInt("id",j);
+        xmlWaypoint.setFloat("x0",waypoint.x0);
+        xmlWaypoint.setFloat("y0",waypoint.y0);
+        xmlWaypoint.setFloat("x1",waypoint.x1);
+        xmlWaypoint.setFloat("y1",waypoint.y1);
+        xmlWaypoint.setInt("frame",waypoint.frame);
+        xmlWaypoint.setFloat("zoomf",waypoint.zoomf);
+        
+      }
+    }
+    saveXML(xml,xmlFilename);
+  }
+}
 class MandelShader
 {
   final int MODE_INTERACTIVE = 0;
@@ -49,9 +174,14 @@ int currStep = 0;
 int maxiteration=256;
 long currTime;
 long prevTime = 0;
-
+int frame = 0;
+boolean recording = false;
 color[] colors;
-  PShader fractal;
+TrajectoryManager trajectoryManager = null;
+Trajectory currentTrajectory = null;
+Waypoint currentWaypoint = null;
+PShader fractal;
+  
   MandelShader(float width, float height)
   {
     this.widthF = width; //<>//
@@ -69,7 +199,9 @@ color[] colors;
     fractal.set("phaseR",phaseR);
     fractal.set("phaseG",phaseG);
     fractal.set("phaseB",phaseB);
+    frame = 0;
     currTime=millis();
+    trajectoryManager = new TrajectoryManager();
   }
   
   void init()
@@ -83,7 +215,7 @@ color[] colors;
     zoomf = 0.99;
     stepPosX = 0.0;
     stepPosY = 0.0;
-    
+    frame = 0;
     stepCount = 0;
     currStep = 0;
     maxiteration=256;
@@ -128,6 +260,21 @@ String[] labels=
   }
   void zoom()
   {
+    if(mode == MODE_DEMO)
+    {
+      if(currentWaypoint!=null)
+      {
+        if(frame == currentWaypoint.frame)
+        {
+          x0 = currentWaypoint.x0;
+          y0 = currentWaypoint.y0;
+          x1 = currentWaypoint.x1;
+          y1 = currentWaypoint.y1;
+          zoomf = currentWaypoint.zoomf;
+          
+        }
+      }
+    }
     long dt = getTimeDelta();
     float thezoom = (float)Math.pow(zoomf, (float)dt*0.001);
     if (currStep >= stepCount) {
@@ -171,6 +318,10 @@ String[] labels=
   }
   void click(int x, int y)
   {
+    if(mode==MODE_DEMO)
+    {
+      return;
+    }
     y = height-y;
     currStep = 0;
     float stepx = (x1-x0)/(float)width;
@@ -188,6 +339,14 @@ String[] labels=
     targetY = yNewPos;
     stepPosX = (xNewPos-posX) / (float)stepCount;
     stepPosY = (yNewPos-posY) / (float)stepCount;
+    if(recording)
+    {
+      if(currentTrajectory!=null)
+      {
+        Waypoint waypoint = new Waypoint(x0,y0,x1,y1,frame,zoomf);
+        currentTrajectory.addWaypoint(waypoint);
+      }
+    }
   }
   String getPos()
   {
@@ -211,6 +370,7 @@ String[] labels=
     //render blank box to use the shader on
     rect(0,0,width,height);
     resetShader();
+    frame++;
     //handle movement
     //set shader variables
 
@@ -220,6 +380,17 @@ String[] labels=
    if(key=='D' || key=='d')
    {
      mode = MODE_DEMO;
+     trajectoryManager.loadFromXML("data/trajectories.xml");
+     currentTrajectory = trajectoryManager.getTrajectory(0);
+     if(currentTrajectory!=null)
+     {
+       if(currentTrajectory.getWaypointCount()>0)
+       {
+         currentWaypoint = currentTrajectory.getWaypoint(0);
+       }
+     }
+     init();
+     frame=0;
    }
    if(key=='I' || key=='i')
    {
@@ -230,6 +401,15 @@ String[] labels=
      if (zoomf>0.1)
      {
        zoomf = zoomf - 0.01;
+      if(recording)
+      {
+        if(currentTrajectory!=null)
+        {
+          Waypoint waypoint = new Waypoint(x0,y0,x1,y1,frame,zoomf);
+          currentTrajectory.addWaypoint(waypoint);
+        }
+      }
+       
      }
    }
    if(key=='X' || key=='x')
@@ -237,11 +417,31 @@ String[] labels=
      if(zoomf<2.01)
      {
        zoomf = zoomf + 0.01;
+       if(recording)
+       {
+         if(currentTrajectory!=null)
+         {
+           Waypoint waypoint = new Waypoint(x0,y0,x1,y1,frame,zoomf);
+           currentTrajectory.addWaypoint(waypoint);
+         }
+       }
      }
+   }
+   if(key=='E' || key=='e')
+   {
+     recording =!recording;
+   }
+   if(key=='W' || key=='w')
+   {
+     trajectoryManager.saveToXML("data/trajectories.xml");
    }
    if(key=='0')
    {
      init();
+     if(recording)
+     {
+       currentTrajectory = trajectoryManager.createTrajectory();
+     }
    }
  }
 }

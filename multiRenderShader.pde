@@ -116,6 +116,10 @@ void draw()
     videoExport.saveFrame();
     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"REC",10,height-50);
   }
+  if(displayMode==DISPLAY_MANDEL && mandelShader.mode == mandelShader.MODE_INTERACTIVE && mandelShader.recording)
+  {
+    outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"REC",10,height-50);
+  }
 }
 
 
