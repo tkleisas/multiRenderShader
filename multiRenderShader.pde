@@ -20,14 +20,18 @@ int displayMode = DISPLAY_MANDEL;
 long timeAcc = 0;
 int textsize = 18;
 int textspeed = 2000;
+boolean record = false;
 void setup()
 {
   //size(640,350,P3D);
   size(1280,720,P3D); //<>//
   //fullScreen(P3D);
-  videoExport = new VideoExport(this,"recording.mp4");
-  videoExport.startMovie();
-  slideShow = new SlideShow();
+  if(record)
+  {
+    videoExport = new VideoExport(this,"recording.mp4");
+    videoExport.startMovie();
+  }
+  slideShow = new SlideShow(textsize);
   gol = new GOL();
   textsize = (int)((18.0/640.0)*width);
   //mandel = new Mandel();
@@ -104,8 +108,9 @@ void draw()
     slideShow.display(timeAcc);
     scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,slideShow.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
   }
-  if(recording)
+  if(recording && record)
   {
+    
     //saveFrame("output/mf######.png"); //<>//
     videoExport.saveFrame();
     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"REC",10,height-50);
@@ -117,6 +122,8 @@ void draw()
 
 void outlineText(float textSize,color outerColor,color innerColor,String text, int x, int y)
 {
+  if(text==null)
+  return;
   float w = textWidth(text);
   
   stroke(outerColor);
@@ -139,6 +146,8 @@ void outlineText(float textSize,color outerColor,color innerColor,String text, i
 
 void scrollingText(int x, int y,  int boxwidth, int boxheight, int lineheight, int linecount, String[] text, long lineDisplayTime, long timevalue, color textcolor, color textoutlinecolor, color backgroundColor)
 {
+     if(text==null)
+     return;
      fill(backgroundColor);
      stroke(backgroundColor);
      rect (x,y,boxwidth,boxheight);
@@ -203,7 +212,10 @@ void keyPressed()
   }
   if(key=='q' || key =='Q')
   {
-    videoExport.endMovie();
+    if(record)
+    {
+      videoExport.endMovie();
+    }
     exit();
   }
 }
