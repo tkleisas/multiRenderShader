@@ -23,8 +23,8 @@ int textspeed = 2000;
 boolean record = false;
 void setup()
 {
-  //size(640,350,P3D);
-  size(1280,720,P3D); //<>//
+  size(640,350,P3D);
+  //size(1280,720,P3D); //<>//
   //fullScreen(P3D);
   if(record)
   {
@@ -83,7 +83,7 @@ void draw()
     }
      outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"CA1D",textsize,textsize);
      outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"R:"+ca1d.getRule(),width-10*textsize,textsize);
-     scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,ca1d.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
+     scrollingText(0,height-6*textsize,width,5*textsize,textsize,6,ca1d.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
   }
   
   if(displayMode==DISPLAY_MANDEL) 
@@ -107,7 +107,7 @@ void draw()
   if(displayMode==DISPLAY_SLIDESHOW)
   {
     slideShow.display(timeAcc);
-    scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,slideShow.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
+    scrollingText(0,height-5*textsize,width,5*textsize,textsize,6,slideShow.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
   }
   if(recording && record)
   {
@@ -183,6 +183,7 @@ void scrollingText(int x, int y,  int boxwidth, int boxheight, int lineheight, i
 
 void keyPressed()
 {
+  char thekey = key;
   if(key=='1')
   {
     displayMode = DISPLAY_MANDEL;
@@ -202,6 +203,10 @@ void keyPressed()
   {
     displayMode = DISPLAY_SLIDESHOW;
     timeAcc = 0;
+  }
+  if(displayMode == DISPLAY_MANDEL)
+  {
+    mandelShader.handleKey(thekey);
   }
   if(key=='g' || key=='G')
   {

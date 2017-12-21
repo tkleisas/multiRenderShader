@@ -48,7 +48,7 @@ class SlideShow
     }
 
     currentSlide = 0;
-    createScrollText((3*width/7*textsize));
+    createScrollText((int)((float)width/(0.6*(float)textsize)));
   }
 
   void createScrollText(int maxwidth)
@@ -158,8 +158,8 @@ class SlideShow
         iheight = 2*height/3;
         iwidth = (int)((float)iheight*factor);
       }
-      image(image, width/3, 0, iwidth, iheight);
-      outlineText(textsize,color(0,0,0,255),color(255,255,255,255),slide.labels.get(slide.currentImage), width/3,iheight+20);
+      image(image, (width-iwidth)/2, 0, iwidth, iheight);
+      outlineText(textsize,color(0,0,0,255),color(255,255,255,255),slide.labels.get(slide.currentImage), (width-iwidth)/2,iheight+textsize);
   }
   
 

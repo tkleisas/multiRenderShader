@@ -1,5 +1,26 @@
+class Trajectory
+{
+  Trajectory()
+  {
+    waypoints = new ArrayList<Waypoint>();
+  }
+  ArrayList<Waypoint> waypoints;
+}
+class Waypoint
+{
+  float x0;
+  float y0;
+  float x1;
+  float y1;
+  int frame;
+  float zoom;
+}
+
 class MandelShader
 {
+  final int MODE_INTERACTIVE = 0;
+  final int MODE_DEMO = 1;
+  int mode = MODE_INTERACTIVE;
 float heightF;
 float widthF;
 float zoom;
@@ -49,6 +70,23 @@ color[] colors;
     fractal.set("phaseG",phaseG);
     fractal.set("phaseB",phaseB);
     currTime=millis();
+  }
+  
+  void init()
+  {
+    x0=-2.0;
+    y0=-1.0;
+    x1=1.0;
+    y1=1.0;
+    posX = x0 + (x1-x0) / 2.0;
+    posY = y0 + (y1-y0) / 2.0;
+    zoomf = 0.99;
+    stepPosX = 0.0;
+    stepPosY = 0.0;
+    
+    stepCount = 0;
+    currStep = 0;
+    maxiteration=256;
   }
 String[] labels=
   {
@@ -153,7 +191,7 @@ String[] labels=
   }
   String getPos()
   {
-    return "x="+posX+",y="+posY;
+    return "x="+posX+",y="+posY+",zoom="+zoomf;
   }  
   void draw() {
     background(0); //<>//
@@ -176,5 +214,34 @@ String[] labels=
     //handle movement
     //set shader variables
 
+ }
+ void handleKey(int key)
+ {
+   if(key=='D' || key=='d')
+   {
+     mode = MODE_DEMO;
+   }
+   if(key=='I' || key=='i')
+   {
+     mode = MODE_INTERACTIVE;
+   }
+   if(key=='Z' || key=='z')
+   {
+     if (zoomf>0.1)
+     {
+       zoomf = zoomf - 0.01;
+     }
+   }
+   if(key=='X' || key=='x')
+   {
+     if(zoomf<2.01)
+     {
+       zoomf = zoomf + 0.01;
+     }
+   }
+   if(key=='0')
+   {
+     init();
+   }
  }
 }
