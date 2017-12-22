@@ -23,8 +23,8 @@ int textspeed = 2000;
 boolean record = false;
 void setup()
 {
-  size(640,350,P3D);
-  //size(1280,720,P3D); //<>//
+  //size(640,350,P3D);
+  size(1280,720,P3D); //<>//
   //fullScreen(P3D);
   if(record)
   {
@@ -90,7 +90,7 @@ void draw()
   {
     mandelShader.draw();
     mandelShader.zoom();
-     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"MNDL:"+frame,textsize,textsize);
+     outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"MNDL:"+mandelShader.frame,textsize,textsize);
      outlineText(textsize,color(0,0,0,255),color(255,0,0,255),"z->"+mandelShader.getPos(),textsize,textsize*3);
      scrollingText(0,height-6*textsize,width,6*textsize,textsize,6,mandelShader.getLabels(),textspeed,timeAcc,color(255,0,0,255),color(0,0,0,255),color(0,0,0,128));
      

@@ -3,7 +3,7 @@ class SlideShow
   PImage image = null;
   ArrayList slides;
   XML xml;
-  String background=""; //<>//
+  String background="";
   int currentSlide = 0;
   String[] scrolltext;
   int textsize;
@@ -12,12 +12,12 @@ class SlideShow
     this.textsize = textsize;
     slides = new ArrayList<Slide>();
     String bgStr = "Σημαντικά πρόσωπα της πληροφορικής";
-    for (int i=0; i<bgStr.length(); i++) //<>//
+    for (int i=0; i<bgStr.length(); i++)
     {
       background = background + Integer.toBinaryString(bgStr.charAt(i));
     }
     xml = loadXML("cs_people.txt");
-    XML[] slidesXML = xml.getChildren("slide"); //<>//
+    XML[] slidesXML = xml.getChildren("slide");
     for (int i=0; i<slidesXML.length; i++)
     {
       Slide slide = new Slide();
@@ -29,7 +29,7 @@ class SlideShow
         for (int j=0; j<imageXML.length; j++)
         {
          
-          slide.filenames.add(imageXML[j].getChild("file").getContent()); //<>//
+          slide.filenames.add(imageXML[j].getChild("file").getContent());
           slide.labels.add(imageXML[j].getChild("label").getContent());
         }
       }

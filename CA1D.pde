@@ -69,7 +69,7 @@ class CA1D
   }
   void setZoom(int zoomf)
   {
-    zoom = zoomf; //<>// //<>//
+    zoom = zoomf; //<>//
     columns = (int)width/zoom;
     rows = (int)height/zoom;
   }
