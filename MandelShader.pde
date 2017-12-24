@@ -431,7 +431,8 @@ String[] labels=
   }
   String getPos()
   {
-    return "x="+posX+",y="+posY+",zoom="+zoomf;
+    
+    return String.format(java.util.Locale.US,"x:%1.8f",posX)+String.format(java.util.Locale.US," y:%1.8f",posY)+String.format(java.util.Locale.US," zoom:%1.8f",zoomf);
   }  
   void draw() {
     background(0);
